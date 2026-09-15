@@ -1,4 +1,4 @@
-# APP Portak (`E-APP`)
+# APP Portal (`E-APP`)
 
 engineered and maintained by the **MISD Team**.
 
