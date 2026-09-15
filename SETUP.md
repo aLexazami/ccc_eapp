@@ -99,9 +99,9 @@ SMTP_PASS =
     * MAMP: /Applications/MAMP/htdocs/dev_e_app
 
 **Database Setup**: 
-    1. Open your database management tool (phpMyAdmin, DBeaver, MySQL Workbench)[cite: 3].
-    2. Create the target schema:
-       ```sql
-       CREATE DATABASE e_eapp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-       ```
-    3. Import your database SQL seed directly into `e_eapp`[cite: 3].
+  1. Open your database management tool (phpMyAdmin, DBeaver, MySQL Workbench)[cite: 3].
+  2. Create the target schema:
+    ```sql
+    CREATE DATABASE e_eapp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    ```
+  3. Import your database SQL seed directly into `e_eapp`[cite: 3].
