@@ -1,0 +1,20 @@
+[14-Sep-2026 10:29:04 Asia/Manila] PHP Notice:  Undefined variable: response in C:\xampp\htdocs\dev_e_app\src\Handlers\Api\system_login.php on line 32
+[14-Sep-2026 10:40:47 Asia/Manila] PHP Warning:  INSERT LOGIN Prepare Error: Unknown column 'user_level' in 'field list' in C:\xampp\htdocs\dev_e_app\src\Database\connect.php on line 264
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 281
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 282
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 283
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 284
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 285
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 286
+[14-Sep-2026 10:42:32 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to a member function formatFullName() on null in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php:245
+Stack trace:
+#0 C:\xampp\htdocs\dev_e_app\src\Controllers\IsLogin.php(23): Src\Common\AppContext->get_full_name()
+#1 C:\xampp\htdocs\dev_e_app\public\admin\index.php(12): require_once('C:\\xampp\\htdocs...')
+#2 {main}
+  thrown in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 245
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 281
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 282
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 283
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 284
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 285
+[14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 286
