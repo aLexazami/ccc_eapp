@@ -98,7 +98,7 @@ SMTP_PASS =
     * LAMP: /var/www/html/dev_e_app
     * MAMP: /Applications/MAMP/htdocs/dev_e_app
 
-**Database Setup**: 
+* **Database Setup**: 
   1. Open your database management tool (phpMyAdmin, DBeaver, MySQL Workbench)[cite: 3].
   2. Create the target schema:
     ```sql
