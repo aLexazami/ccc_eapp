@@ -3,15 +3,15 @@
 engineered and maintained by the **MISD Team**.
 
 ---
+## Technical Specifications & Stack
 
-## System Overview & Tech Stack
-
-* **Language:** PHP 7.4 – 8.x
-* **Database:** MySQL / MariaDB (`e_eapp`)
+* **Core Engine:** PHP 7.4 – 8.x
+* **Database Target:** MySQL / MariaDB (`e_eguro`)
 * **Architecture:** Modular MVC / Front-Controller layout with custom `.env` runtime parser
-* **Timezone:** `Asia/Manila` (`UTC+8`)
-* **Federated Auth Partner:** `e-GURO++` (`eguro.ccc.edu.ph`)
-
+* **Default Timezone:** `Asia/Manila` (`UTC+8`)
+* **Max Payload Limit:** `20MB`
+* **Session Strategy:** AES-256-CBC encrypted dynamic sessions (`dev_e_app_session` / `e_app_session`)
+* **Federated Auth Partner:** `e-GURO++` (`dev_e_eguro`)
 ---
 
 ## System Architecture & Directory Map
