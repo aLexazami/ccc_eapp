@@ -18,3 +18,50 @@ Stack trace:
 [14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 284
 [14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 285
 [14-Sep-2026 11:21:48 Asia/Manila] PHP Warning:  ini_set(): A session is active. You cannot change the session module's ini settings at this time in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 286
+[17-Sep-2026 10:13:09 Asia/Manila] PHP Warning:  require_once(C:\xampp\htdocs\dev_e_app/src/Views/App/home.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
+[17-Sep-2026 10:13:09 Asia/Manila] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\dev_e_app/src/Views/App/home.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\dev_e_app\public\index.php:49
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 281
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 282
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 283
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 284
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 285
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 286
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:25 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:26 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:26 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:26 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:26 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:26 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 281
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 282
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 283
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 284
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 285
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Warning:  ini_set(): Session ini settings cannot be changed when a session is active in C:\xampp\htdocs\dev_e_app\src\Common\cl_session.php on line 286
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$token_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$device is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
