@@ -1244,4 +1244,26 @@ class DataHelper
 
         throw new Exception("Failed to save uploaded file to server storage.");
     }
+
+    #=======================================================================================================
+    # 
+
+    /**
+     * Generates HTML option tags dynamically from any array format.
+     *
+     * @param array $options The array to loop through.
+     * @param bool $useKeysAsValue AsValue Set to true if the array keys should be the option values (e.g., for associative arrays).
+     * @param string|int|null $selectedValue The value/key that should be pre-selected.
+     */
+    public function generateSelectOptions(array $options, bool $useKeysAsValue = false, $selectedValue = null)
+    {
+        foreach ($options as $key => $value) {
+            $optionValue = $useKeysAsValue ? $key : $value;
+            $selected = ($selectedValue !== null && $optionValue == $selectedValue) ? ' selected' : '';
+
+            echo '<option value="' . htmlspecialchars($optionValue) . '"' . $selected . '>';
+            echo htmlspecialchars($value);
+            echo '</option>';
+        }
+    }
 }

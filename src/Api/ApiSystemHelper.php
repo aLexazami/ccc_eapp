@@ -55,6 +55,120 @@ class ApiSystemHelper
     }
 
     /**
+     * Private helper to check if a database table exists
+     */
+    private function tableExists(string $tableName): bool
+    {
+        $sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(?)";
+        $stmt = mysqli_prepare($this->db, $sql);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "s", $tableName);
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_store_result($stmt);
+                $exists = mysqli_stmt_num_rows($stmt) > 0;
+                mysqli_stmt_close($stmt);
+                return $exists;
+            }
+            mysqli_stmt_close($stmt);
+        }
+
+        return false;
+    }
+
+    /**
+     * Action Pipeline: add_information
+     * Dynamically processes incoming table-keyed payloads to insert or update table records.
+     */
+    public function addInformation()
+    {
+        $data       = $this->data;
+        $db_connect = $this->db;
+
+        // Extract items array from payload (supports nested items or direct object key structure)
+        $items = isset($data->items) && is_array($data->items) ? $data->items : (array)$data;
+
+        if (empty($items)) {
+            $this->sendErrorResponse('Invalid or empty payload structure for information processing.');
+        }
+
+        $processed_records = [];
+
+        foreach ($items as $table => $recordData) {
+            // Trim table string to clean up any extra whitespace
+            $table = is_string($table) ? trim($table) : $table;
+
+            // Skip internal meta properties if standard object payload is passed directly
+            if (!is_array($recordData) || empty($table) || in_array($table, ['action', 'system_type', 'total_records'])) {
+                continue;
+            }
+
+            if (!$this->tableExists($table)) {
+                $this->sendErrorResponse("Database error: Table '{$table}' does not exist.");
+            }
+
+            $primaryKeyCandidate = null;
+            $primaryValue        = null;
+
+            // Find primary key or foreign identifier candidate ending with _id or id
+            foreach ($recordData as $col => $val) {
+                if (substr($col, -3) === '_id' || $col === 'id') {
+                    $primaryKeyCandidate = $col;
+                    $primaryValue        = $val;
+                    break;
+                }
+            }
+
+            $recordExists = false;
+
+            // Check if record exists in target table
+            if ($primaryKeyCandidate !== null && !empty($primaryValue)) {
+                $sqlCheck = "SELECT {$primaryKeyCandidate} FROM {$table} WHERE {$primaryKeyCandidate} = ? LIMIT 1";
+                if ($stmt = mysqli_prepare($db_connect, $sqlCheck)) {
+                    mysqli_stmt_bind_param($stmt, "s", $primaryValue);
+                    if (mysqli_stmt_execute($stmt)) {
+                        mysqli_stmt_store_result($stmt);
+                        if (mysqli_stmt_num_rows($stmt) > 0) {
+                            $recordExists = true;
+                        }
+                    }
+                    mysqli_stmt_close($stmt);
+                }
+            }
+
+            // Perform atomic operation
+            $db_connect->begin_transaction();
+            try {
+                if ($recordExists && $primaryKeyCandidate !== null) {
+                    $where = [$primaryKeyCandidate => $primaryValue];
+                    $updateStatus = $this->helper->updateData($table, $recordData, $where);
+
+                    if (!$updateStatus) {
+                        throw new Exception("Failed to update record in '{$table}'.");
+                    }
+                } else {
+                    $insertId = $this->helper->insertData($table, $recordData);
+
+                    if (!$insertId) {
+                        throw new Exception("Failed to insert new record into '{$table}'.");
+                    }
+                }
+
+                $db_connect->commit();
+                $processed_records[] = [
+                    'table'  => $table,
+                    'action' => $recordExists ? 'updated' : 'inserted',
+                    'status' => true
+                ];
+            } catch (Exception $e) {
+                $db_connect->rollback();
+                $this->sendErrorResponse($e->getMessage());
+            }
+        }
+
+        $this->sendSuccessResponse(['processed_records' => $processed_records]);
+    }
+
+    /**
      * Action Pipeline: add_account
      * CRUD Create/Update Engine handling Bulk Multi-Dimensional Payloads
      */
@@ -108,8 +222,6 @@ class ApiSystemHelper
 
             if ($exist) {
                 # UPDATE EXISTING USER ACCOUNT
-
-
                 $db_connect->begin_transaction();
 
                 try {
@@ -173,7 +285,6 @@ class ApiSystemHelper
                 }
             } else {
                 # INSERT NEW USER ACCOUNT
-
                 $db_connect->begin_transaction();
 
                 try {

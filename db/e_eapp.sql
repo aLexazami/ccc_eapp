@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2026 at 02:06 AM
+-- Generation Time: Sep 22, 2026 at 01:42 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 7.4.29
 
@@ -159,6 +159,8 @@ CREATE TABLE `office` (
   `office_code` varchar(100) NOT NULL DEFAULT '',
   `office_name` varchar(255) NOT NULL DEFAULT '',
   `office_logo` varchar(100) DEFAULT NULL,
+  `department_id` int(11) DEFAULT 0,
+  `room_id` int(11) DEFAULT 0,
   `flag_status` int(11) NOT NULL DEFAULT 0,
   `flag_update` int(11) NOT NULL DEFAULT 0,
   `date_modify` datetime NOT NULL DEFAULT current_timestamp()
@@ -168,17 +170,18 @@ CREATE TABLE `office` (
 -- Dumping data for table `office`
 --
 
-INSERT INTO `office` (`office_id`, `office_code`, `office_name`, `office_logo`, `flag_status`, `flag_update`, `date_modify`) VALUES
-(1, 'Office of the College President', 'OCP', NULL, 0, 0, '2026-09-09 17:10:00'),
-(2, 'Office of the Vice President for Academic Affairs', 'OVPAA', NULL, 0, 0, '2026-09-09 17:10:00'),
-(3, 'Office of the Vice President for Student Development and Auxiliary', 'OVPSDA', NULL, 0, 0, '2026-09-09 17:10:00'),
-(4, 'Office of the Vice President for Administration and Finance', 'OVPAF', NULL, 0, 0, '2026-09-09 17:10:00'),
-(5, 'Office of the Vice President for Research, Extension, Planning, and Quality Assurance', 'OVPREPQA', NULL, 0, 0, '2026-09-09 17:10:00'),
-(6, 'Office of the Vice President for College Advancement and Relations', 'OVPCAR', NULL, 0, 0, '2026-09-09 17:10:00'),
-(7, 'Department of Teacher Education', 'DTE', NULL, 0, 0, '2026-09-09 17:10:00'),
-(8, 'Department of Arts and Sciences', 'DAS', NULL, 0, 0, '2026-09-09 17:10:00'),
-(9, 'Department of Business and Accountancy', 'DBA', NULL, 0, 0, '2026-09-09 17:10:00'),
-(10, 'Department of Computing and Informatics', 'DCI', NULL, 0, 0, '2026-09-09 17:10:00');
+INSERT INTO `office` (`office_id`, `office_code`, `office_name`, `office_logo`, `department_id`, `room_id`, `flag_status`, `flag_update`, `date_modify`) VALUES
+(1, 'OCP', 'Office of the College President', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(2, 'OVPAA', 'Office of the Vice President for Academic Affairs', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(3, 'OVPSDA', 'Office of the Vice President for Student Development and Auxiliary', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(4, 'OVPAF', 'Office of the Vice President for Administration and Finance', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(5, 'OVPREPQA', 'Office of the Vice President for Research, Extension, Planning, and Quality Assurance', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(6, 'OVPCAR', 'Office of the Vice President for College Advancement and Relations', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(7, 'DTE', 'Department of Teacher Education', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(8, 'DAS', 'Department of Arts and Sciences', NULL, 1, 0, 0, 0, '2026-09-09 17:10:00'),
+(9, 'DBA', 'Department of Business and Accountancy', NULL, 0, 0, 0, 0, '2026-09-09 17:10:00'),
+(10, 'DCI', 'Department of Computing and Informatics', NULL, 3, 0, 0, 0, '2026-09-21 18:07:41'),
+(11, 'LRIC', 'Learning and Resource Information Center', NULL, 0, 2, 0, 0, '2026-09-21 18:25:59');
 
 -- --------------------------------------------------------
 
@@ -228,13 +231,22 @@ CREATE TABLE `room` (
   `room_code` varchar(100) NOT NULL DEFAULT '',
   `room_name` varchar(255) NOT NULL DEFAULT '',
   `room_type` varchar(100) NOT NULL DEFAULT '' COMMENT 'ROOM\r\nOFFICE\r\nLABORATORY',
-  `room_details` text NOT NULL DEFAULT '',
+  `room_details` text DEFAULT '\'\'',
   `facility_id` int(11) NOT NULL DEFAULT 0,
   `facility_floor` varchar(100) NOT NULL DEFAULT '',
   `flag_status` int(11) NOT NULL DEFAULT 0,
   `flag_update` int(11) NOT NULL DEFAULT 0 COMMENT '0 - not updated\r\n1 - updated',
   `date_modify` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `room`
+--
+
+INSERT INTO `room` (`room_id`, `room_code`, `room_name`, `room_type`, `room_details`, `facility_id`, `facility_floor`, `flag_status`, `flag_update`, `date_modify`) VALUES
+(1, 'MIS OFFICE', 'Management Information System Department', 'OFFICE', NULL, 1, 'Ground Floor', 0, 0, '2026-09-21 14:04:07'),
+(2, 'R1', 'Rizal 1', 'CLASSROOM', '', 2, 'Under Ground Floor', 0, 0, '2026-09-21 15:29:25'),
+(3, '1-JMC-CL1', 'JMC Computer Lab 1', 'LABORATORY', '', 3, 'Second Floor', 0, 0, '2026-09-21 15:54:38');
 
 -- --------------------------------------------------------
 
@@ -296,18 +308,20 @@ CREATE TABLE `system_key` (
   `system_id` int(11) NOT NULL,
   `system_type` varchar(255) NOT NULL,
   `system_key` varchar(255) NOT NULL,
-  `public_key` varchar(255) NOT NULL,
-  `secret_key` varchar(255) NOT NULL,
-  `img` blob DEFAULT NULL
+  `public_key` text NOT NULL,
+  `secret_key` varchar(512) NOT NULL,
+  `img` blob DEFAULT NULL,
+  `flag_transfer` tinyint(1) NOT NULL DEFAULT 0,
+  `flag_status` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `system_key`
 --
 
-INSERT INTO `system_key` (`system_id`, `system_type`, `system_key`, `public_key`, `secret_key`, `img`) VALUES
-(1, 'E-GURO++', '239cf01a82900e2ae22aa1c2daebc778353438345acf066989dd896c9a267584', '700aa2c4072294be8b4dfd86a7efd1e88d176fc38c02c4660800174c5eae5cc2', 'K0txckNjanJhSFJWQmlrSlpwRC9nREhmMzJ3SnRMRmxvSERLSGdqQVY2c2JHS1RYZTRPZ3I3L0t5ellBUXcwUHI2bExpeUV1cHpxaTBpdDh4QkJMaytYVUxvZTZrNzkzVjlITVVVRXVORHc9Ojo_PLUS_WVNXi9pedXZrJWb507xd', NULL),
-(2, 'E-APP', '4c564a29da1696b7c2668456d30ad442054cccf615b427ff2cc2619f14d9a832', '8d170effcea914034b2b437c30549166a6facb79fbcce9157bb3dd5d7d28cc94', 'QmxSOE16TGsySGdxRVdNOThNalMrdldsTjRLMmNXUEcxcHJFb2NSbUV6VjBJMXpORHZSOGg4UENBdWVuaFBJNGJKNzVRM01IdmZVYzluc0tvSnNvczlSTVlTWmlGNTh5OVpuVmJCTWc4Y0U9Ojo3Kwg0zq_PLUS_3243A_PLUS_N_SLASH_fbiFV', NULL);
+INSERT INTO `system_key` (`system_id`, `system_type`, `system_key`, `public_key`, `secret_key`, `img`, `flag_transfer`, `flag_status`) VALUES
+(1, 'E-GURO++', '239cf01a82900e2ae22aa1c2daebc778353438345acf066989dd896c9a267584', '700aa2c4072294be8b4dfd86a7efd1e88d176fc38c02c4660800174c5eae5cc2', 'K0txckNjanJhSFJWQmlrSlpwRC9nREhmMzJ3SnRMRmxvSERLSGdqQVY2c2JHS1RYZTRPZ3I3L0t5ellBUXcwUHI2bExpeUV1cHpxaTBpdDh4QkJMaytYVUxvZTZrNzkzVjlITVVVRXVORHc9Ojo_PLUS_WVNXi9pedXZrJWb507xd', NULL, 0, 0),
+(2, 'E-APP', '4c564a29da1696b7c2668456d30ad442054cccf615b427ff2cc2619f14d9a832', '8d170effcea914034b2b437c30549166a6facb79fbcce9157bb3dd5d7d28cc94', 'QmxSOE16TGsySGdxRVdNOThNalMrdldsTjRLMmNXUEcxcHJFb2NSbUV6VjBJMXpORHZSOGg4UENBdWVuaFBJNGJKNzVRM01IdmZVYzluc0tvSnNvczlSTVlTWmlGNTh5OVpuVmJCTWc4Y0U9Ojo3Kwg0zq_PLUS_3243A_PLUS_N_SLASH_fbiFV', NULL, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -443,6 +457,12 @@ ALTER TABLE `programs`
   ADD PRIMARY KEY (`program_id`);
 
 --
+-- Indexes for table `room`
+--
+ALTER TABLE `room`
+  ADD PRIMARY KEY (`room_id`);
+
+--
 -- Indexes for table `student`
 --
 ALTER TABLE `student`
@@ -459,7 +479,8 @@ ALTER TABLE `system_access`
 -- Indexes for table `system_key`
 --
 ALTER TABLE `system_key`
-  ADD PRIMARY KEY (`system_id`);
+  ADD PRIMARY KEY (`system_id`),
+  ADD UNIQUE KEY `idx_system_key` (`system_key`);
 
 --
 -- Indexes for table `users`
@@ -512,13 +533,19 @@ ALTER TABLE `login`
 -- AUTO_INCREMENT for table `office`
 --
 ALTER TABLE `office`
-  MODIFY `office_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `office_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `programs`
 --
 ALTER TABLE `programs`
   MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `room`
+--
+ALTER TABLE `room`
+  MODIFY `room_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `student`
