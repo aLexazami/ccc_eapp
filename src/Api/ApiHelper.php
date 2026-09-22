@@ -22,6 +22,43 @@ class ApiHelper
         }
     }
 
+    /**
+     * Private helper to log synchronization errors into the database.
+     */
+    private function logError(string $systemType, string $actionType, string $errorMessage, ?string $targetTable = null, ?string $recordIdentifier = null, $payload = null): void
+    {
+        $sql = "INSERT INTO sync_logs (system_type, action_type, target_table, record_identifier, error_message, payload) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($this->db, $sql);
+
+        if ($stmt) {
+            $payloadStr = is_string($payload) ? $payload : json_encode($payload);
+            mysqli_stmt_bind_param($stmt, "ssssss", $systemType, $actionType, $targetTable, $recordIdentifier, $errorMessage, $payloadStr);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    /**
+     * Fetch all active system types (flag_status = 0)
+     *
+     * @return array List of active system_type strings
+     */
+    public function getActiveTransferSystemTypes(): array
+    {
+        $activeSystems = [];
+        $sql = "SELECT system_type FROM system_key WHERE flag_transfer = 1 AND flag_status = 0";
+        $result = mysqli_query($this->db, $sql);
+
+        if ($result) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                $activeSystems[] = $row['system_type'];
+            }
+            mysqli_free_result($result);
+        }
+
+        return $activeSystems;
+    }
+
     public function setKeys($system = null)
     {
         if ($system === null) {
@@ -32,7 +69,7 @@ class ApiHelper
             throw new Exception("No system type provided for key retrieval.");
         }
 
-        $sql = "SELECT system_key, public_key, secret_key FROM system_key WHERE system_type = ? OR public_key = ? LIMIT 1";
+        $sql = "SELECT system_key, public_key, secret_key FROM system_key WHERE (system_type = ? OR public_key = ?) AND flag_status = 0 LIMIT 1";
         $stmt = mysqli_prepare($this->db, $sql);
 
         if (!$stmt) {
@@ -46,7 +83,7 @@ class ApiHelper
         mysqli_stmt_close($stmt);
 
         if (!$public_key || !$secret_key) {
-            throw new Exception("Invalid system keys for system: $system");
+            throw new Exception("Invalid or inactive system keys for system: $system");
         }
 
         $this->system_key = $system_key;
@@ -167,27 +204,17 @@ class ApiHelper
         return (json_last_error() === JSON_ERROR_NONE) ? $decoded : $input;
     }
 
-    /**
-     * Encrypts and transmits dynamic bulk or single account payload data to remote target system.
-     *
-     * @param string $apiUrl Destination API endpoint URL
-     * @param string $systemType Target system type key (e.g. 'EAMS', 'LMS')
-     * @param array $items Pre-structured payload array items to sync
-     * @param string $actionType Action performed (defaults to 'add_account')
-     * @param bool $autoUpdateRefId Optional flag to auto-update local system_access table (defaults to false)
-     * @return array Standardized result array
-     */
     public function syncAccountData(string $apiUrl, string $systemType, array $items, string $actionType = 'add_account', bool $autoUpdateRefId = false): array
     {
         try {
             if (empty($apiUrl) || empty($items)) {
-                return ['success' => false, 'message' => 'Target API URL or item queue cannot be empty.'];
+                $errMsg = 'Target API URL or item queue cannot be empty.';
+                $this->logError($systemType, $actionType, $errMsg, null, null, $items);
+                return ['success' => false, 'message' => $errMsg];
             }
 
-            # Configure system encryption keys
             $this->setKeys($systemType);
 
-            # Build Encoded Data Payload (Supports both direct payload arrays and bulk items)
             $encodedPayload = [
                 'items'         => $items,
                 'action'        => $actionType,
@@ -195,32 +222,34 @@ class ApiHelper
                 'total_records' => isset($items['items']) ? count($items['items']) : 1
             ];
 
-            # Encrypt payload & execute HTTP/cURL request
             $encryptedString = $this->encryptApiData(json_encode($encodedPayload));
             $payloadWrapper  = ['curl_response' => $encryptedString];
 
             $responseApi = $this->curlRequest($apiUrl, $payloadWrapper, $this->get_public_key());
             $resultJson  = json_decode($responseApi, true);
 
-            # Validate transmission response
             if (json_last_error() !== JSON_ERROR_NONE || (isset($resultJson['response_status']) && (int)$resultJson['response_status'] === 0)) {
-                $errMsg = $resultJson['msg_response'] ?? 'Subsystem Rejection or JSON format breach.';
+                $errMsg = $resultJson['msg_response'] ?? $resultJson['error_msg'] ?? 'Subsystem Rejection or JSON format breach.';
+                $this->logError($systemType, $actionType, $errMsg, 'system_access', null, $items);
                 return ['success' => false, 'message' => $errMsg];
             }
 
-            # Decrypt returned payload
             if (!isset($resultJson['curl_response'])) {
-                return ['success' => false, 'message' => 'Missing expected encrypted payload in API response.'];
+                $errMsg = 'Missing expected encrypted payload in API response.';
+                $this->logError($systemType, $actionType, $errMsg, 'system_access', null, $items);
+                return ['success' => false, 'message' => $errMsg];
             }
 
             $decryptedPayload = $this->decryptApiData($resultJson['curl_response']);
             $responseData     = json_decode($decryptedPayload, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                return ['success' => false, 'message' => 'Handshake Response Decryption Failure. Invalid JSON string returned.'];
+                $errMsg = 'Handshake Response Decryption Failure. Invalid JSON string returned.';
+                $this->logError($systemType, $actionType, $errMsg, 'system_access', null, $items);
+                return ['success' => false, 'message' => $errMsg];
             }
 
-            $processed_records = $responseData['data']['processed_records'];
+            $processed_records = $responseData['data']['processed_records'] ?? [];
             $successCount = 0;
 
             if ($autoUpdateRefId && !empty($processed_records)) {
@@ -232,7 +261,6 @@ class ApiHelper
                     $system_type   = null;
                     $system_role   = null;
 
-                    // Types: "iisi" -> int (ref_id), int (user_id), string (system_type), int (system_role)
                     if (mysqli_stmt_bind_param($updateStmt, "iisi", $system_ref_id, $user_id, $system_type, $system_role)) {
                         foreach ($processed_records as $item) {
                             $system_ref_id = $item['system_ref_id'] ?? null;
@@ -240,16 +268,22 @@ class ApiHelper
                             $system_type   = $item['system_type'] ?? null;
                             $system_role   = $item['system_role'] ?? null;
 
-                            // Fix: Check for non-null/non-empty string instead of !empty() which breaks for "0"
                             if (!empty($system_ref_id) && !empty($user_id) && $system_role !== null && $system_role !== '') {
                                 if (mysqli_stmt_execute($updateStmt)) {
                                     $successCount++;
+                                } else {
+                                    $errMsg = "Failed updating system_access: " . mysqli_stmt_error($updateStmt);
+                                    $this->logError($systemType, $actionType, $errMsg, 'system_access', (string)$user_id, $item);
                                 }
                             }
                         }
+                    } else {
+                        $this->logError($systemType, $actionType, "Statement parameter binding failed.", 'system_access', null, $items);
                     }
 
                     mysqli_stmt_close($updateStmt);
+                } else {
+                    $this->logError($systemType, $actionType, "DB prepare statement failed: " . mysqli_error($this->db), 'system_access', null, $items);
                 }
             }
 
@@ -260,6 +294,118 @@ class ApiHelper
                 'data'            => $processed_records
             ];
         } catch (\Exception $e) {
+            $this->logError($systemType, $actionType, 'Pipeline Execution Failure: ' . $e->getMessage(), null, null, $items);
+            return ['success' => false, 'message' => 'Pipeline Execution Failure: ' . $e->getMessage()];
+        }
+    }
+
+    public function syncInformationData(string $apiUrl, string $systemType, array $items, string $actionType = 'add_information', bool $autoUpdateRefId = false): array
+    {
+        try {
+            if (empty($apiUrl) || empty($items)) {
+                $errMsg = 'Target API URL or item queue cannot be empty.';
+                $this->logError($systemType, $actionType, $errMsg, null, null, $items);
+                return ['success' => false, 'message' => $errMsg];
+            }
+
+            $this->setKeys($systemType);
+
+            $encodedPayload = [
+                'items'         => $items,
+                'action'        => $actionType,
+                'system_type'   => $systemType,
+                'total_records' => isset($items['items']) ? count($items['items']) : 1
+            ];
+
+            $encryptedString = $this->encryptApiData(json_encode($encodedPayload));
+            $payloadWrapper  = ['curl_response' => $encryptedString];
+
+            $responseApi = $this->curlRequest($apiUrl, $payloadWrapper, $this->get_public_key());
+            $resultJson  = json_decode($responseApi, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE || (isset($resultJson['response_status']) && (int)$resultJson['response_status'] === 0)) {
+                $errMsg = $resultJson['msg_response'] ?? $resultJson['error_msg'] ?? 'Subsystem Rejection or JSON format breach.';
+                $this->logError($systemType, $actionType, $errMsg, null, null, $items);
+                return ['success' => false, 'message' => $errMsg];
+            }
+
+            if (!isset($resultJson['curl_response'])) {
+                $errMsg = 'Missing expected encrypted payload in API response.';
+                $this->logError($systemType, $actionType, $errMsg, null, null, $items);
+                return ['success' => false, 'message' => $errMsg];
+            }
+
+            $decryptedPayload = $this->decryptApiData($resultJson['curl_response']);
+            $responseData     = json_decode($decryptedPayload, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $errMsg = 'Handshake Response Decryption Failure. Invalid JSON string returned.';
+                $this->logError($systemType, $actionType, $errMsg, null, null, $items);
+                return ['success' => false, 'message' => $errMsg];
+            }
+
+            $processed_records = $responseData['data']['processed_records'] ?? [];
+            $successCount = 0;
+
+            if ($autoUpdateRefId && !empty($processed_records)) {
+                foreach ($processed_records as $item) {
+                    $tableName = $item['table'] ?? null;
+
+                    if (empty($tableName) && is_array($items)) {
+                        $tableName = key($items);
+                    }
+
+                    if (!empty($tableName) && isset($item['status']) && $item['status'] === true) {
+                        $idColumn = null;
+                        $idValue  = null;
+
+                        if (isset($items[$tableName]) && is_array($items[$tableName])) {
+                            foreach ($items[$tableName] as $col => $val) {
+                                if (substr($col, -3) === '_id' || $col === 'id') {
+                                    $idColumn = $col;
+                                    $idValue  = $val;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if ($idColumn && $idValue !== null) {
+                            $updateSql  = "UPDATE {$tableName} SET flag_update = 1 WHERE {$idColumn} = ?";
+                            $updateStmt = mysqli_prepare($this->db, $updateSql);
+
+                            if ($updateStmt) {
+                                mysqli_stmt_bind_param($updateStmt, "s", $idValue);
+                                if (mysqli_stmt_execute($updateStmt)) {
+                                    $successCount++;
+                                } else {
+                                    $errMsg = "Failed to update flag_update in '{$tableName}': " . mysqli_stmt_error($updateStmt);
+                                    $this->logError($systemType, $actionType, $errMsg, $tableName, (string)$idValue, $item);
+                                }
+                                mysqli_stmt_close($updateStmt);
+                            } else {
+                                $errMsg = "Failed to prepare update query for '{$tableName}': " . mysqli_error($this->db);
+                                $this->logError($systemType, $actionType, $errMsg, $tableName, (string)$idValue, $item);
+                            }
+                        } else {
+                            $errMsg = "Identifier column (_id/id) missing or empty for table '{$tableName}'.";
+                            $this->logError($systemType, $actionType, $errMsg, $tableName, null, $item);
+                        }
+                    } else {
+                        // Log failure returned from the subsystem endpoint for this record
+                        $errMsg = $item['message'] ?? "Subsystem failed to process table '{$tableName}'.";
+                        $this->logError($systemType, $actionType, $errMsg, $tableName, null, $item);
+                    }
+                }
+            }
+
+            return [
+                'success'         => true,
+                'message'         => 'Synchronization completed successfully.',
+                'updated_records' => $successCount,
+                'data'            => $processed_records
+            ];
+        } catch (\Exception $e) {
+            $this->logError($systemType, $actionType, 'Pipeline Execution Failure: ' . $e->getMessage(), null, null, $items);
             return ['success' => false, 'message' => 'Pipeline Execution Failure: ' . $e->getMessage()];
         }
     }

@@ -65,3 +65,13 @@ Stack trace:
 [17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$ip is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
 [17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
 [17-Sep-2026 10:13:49 Asia/Manila] PHP Deprecated:  Creation of dynamic property Src\Common\AppContext::$user_role_id is deprecated in C:\xampp\htdocs\dev_e_app\src\Common\AppContext.php on line 92
+[22-Sep-2026 16:40:44 Asia/Manila] PHP Warning:  require_once(C:\xampp\htdocs\dev_e_app/src/Views/App/home.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
+[22-Sep-2026 16:40:44 Asia/Manila] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\dev_e_app/src/Views/App/home.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\dev_e_app\public\index.php:49
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
+[22-Sep-2026 16:57:18 Asia/Manila] PHP Warning:  require_once(C:\xampp\htdocs\dev_e_app/src/Views/App/home.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
+[22-Sep-2026 16:57:18 Asia/Manila] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\xampp\htdocs\dev_e_app/src/Views/App/home.php' (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\dev_e_app\public\index.php:49
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\dev_e_app\public\index.php on line 49
